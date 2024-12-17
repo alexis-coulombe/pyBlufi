@@ -581,6 +581,15 @@ class BlufiClient:
         comfirmType = getTypeValue(CTRL.PACKAGE_VALUE, CTRL.SUBTYPE_CONNECT_WIFI)
         self.await_bleak(self.post(False, False, self.mRequireAck, comfirmType, None))
 
+    def postSoftAPInfo(self, params):
+        ssidType = getTypeValue(DATA.PACKAGE_VALUE, DATA.SUBTYPE_SOFTAP_WIFI_SSID)
+        ssidBytes = params['ssid'].encode('utf-8')
+        self.await_bleak(self.post(self.mEncrypted, self.mChecksum, self.mRequireAck, ssidType, ssidBytes))
+
+        pwdType = getTypeValue(DATA.PACKAGE_VALUE, DATA.SUBTYPE_SOFTAP_WIFI_PASSWORD)
+        pwdBytes = params['pass'].encode('utf-8')
+        self.await_bleak(self.post(self.mEncrypted, self.mChecksum, self.mRequireAck, pwdType, pwdBytes))
+
     def postCustomData(self, data: bytearray):
         type = getTypeValue(DATA.PACKAGE_VALUE, DATA.SUBTYPE_CUSTOM_DATA)
         self.await_bleak(self.post(self.mEncrypted, self.mChecksum, self.mRequireAck, type, data))
