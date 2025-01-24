@@ -36,3 +36,39 @@ have not put much thought into it.
 ```
 pip install git+https://github.com/someburner/pyBlufi.git
 ```
+
+## Usage (sending custom data)
+```
+import blufi
+import bleak
+import asyncio
+
+client = blufi.BlufiClient()
+
+async def scanDevices():
+    print("Scanning for 5 seconds, please wait...")
+
+    devices = await bleak.BleakScanner.discover(
+        return_adv=True
+    )
+
+    for d, a in devices.values():
+        print(f"{d} | {a}")
+
+# Set customData received callback
+def onCustomDataCallback(self, data):
+    print(f"Received data: {data}")
+
+blufi.BlufiClient.onCustomData = onCustomDataCallback
+
+# Scan for devices
+asyncio.run(scanDevices())
+
+# Exemple to post customData to a discovered device
+client.connectByName(name="the-discovered-device-name")
+client.negotiateSecurity()
+client.setPostPackageLengthLimit(256)
+
+client.postCustomData(data="your-custom-data")
+
+```
